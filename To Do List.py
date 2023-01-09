@@ -57,7 +57,7 @@ while True:
     elif user_action.startswith("complete"):
         try:
             number = int(user_action[9:])
-            todos = functions.get_todos(  )
+            todos = functions.get_todos()
             index = number - 1
             todo_to_remove = todos[index].strip('\n')
             todos.pop(index)
