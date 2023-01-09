@@ -1,7 +1,0 @@
-<<<<<<< HEAD
-fred
-tyrone
-=======
-Tyrone
-Fred
->>>>>>> 169b0d83543b163447bd9ea46e80a0d3026447e1
