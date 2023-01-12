@@ -1,48 +1,73 @@
-import functions 
+import functions
 import PySimpleGUI as gi
-label = gi.Text("Type in a to-do")
-input_box = gi.InputText(tooltip="Enter todo", key="todo")
-add_button = gi.Button("Add")
-list_box = gi.Listbox(values=functions.get_todos(), key='todos', 
-                      enable_events=True, size =[45, 10])
-edit_button = gi.Button("Edit")
+import time
 
-  
-window = gi.Window('My To-do List', 
-                   layout=[[label], [input_box, add_button], [list_box,edit_button]],
+
+gi.theme("DarkBlack")
+clock = gi.Text('', key="clock")
+label = gi.Text("Type in a to-do")
+input_box = gi.InputText(tooltip="Enter todo", key="todo", size=43)
+add_button = gi.Button("Add",size=8)
+edit_button = gi.Button("Edit", size=8)
+complete_button = gi.Button("Complete")
+exit_button = gi.Button("Exit")
+
+list_box = gi.Listbox(values=functions.get_todos(), key='todos',
+                      enable_events=True, size=[42, 10])
+
+
+window = gi.Window('My To-do List',
+                   layout=[[clock], [label],
+                           [input_box, add_button],
+                           [list_box, edit_button],
+                           [complete_button, exit_button]],
                    font=('Helvetica', 15))
+
+
 while True:
-    event, values = window.read()
-    print(event)
-    print(values)
+    event, values = window.read(timeout=800)
+    window["clock"].update(value=time.strftime("%b %d, %Y %H:%M:%S"))
+
     match event:
-        
+
         case "Add":
-            todos= functions.get_todos()
-            new_todo = values['todo'] +"\n"
+            todos = functions.get_todos()
+            new_todo = values['todo'] + "\n"
             todos.append(new_todo)
             functions.write_todos(todos)
             window['todos'].update(values=todos)
-        
+
         case "Edit":
+            try:
+                todo_to_edit = values['todos'][0]
+                new_todo = values['todo']
 
-            todo_to_edit = values['todos'][0]
-            new_todo = values['todo']
+                todos = functions.get_todos()
+                index = todos.index(todo_to_edit)
+                todos[index] = new_todo
+                functions.write_todos(todos)
+                window['todos'].update(values=todos)
+            except IndexError:
+                gi.popup("Please select an item first", font=("Helvetica", 15 ))
 
-            todos = functions.get_todos()
-            index = todos.index(todo_to_edit)
-            todos[index] = new_todo
-            functions.write_todos(todos)
-            window['todos'].update(values=todos)
+        case "Complete":
+            try:
+                todo_to_complete = values['todos'][0]
+                todos = functions.get_todos()
+                todos.remove(todo_to_complete)
+                functions.write_todos(todos)
+                window['todos'].update(values=todos)
+                window['todo'].update(value='')
+            except IndexError:
+                gi.popup("Please Select an item first",font=("Helvetica", 15))
+
+        case "Exit":
+            break
+
         case 'todos':
-                window['todo'].update(value=values['todos'])
+            window['todo'].update(value=values['todos'][0])
         case gi.WIN_CLOSED:
             break
-            
-     
-  
-                
+
+
 window.close()
-
-
-
